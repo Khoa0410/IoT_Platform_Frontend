@@ -1,9 +1,13 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../context/AuthContext";
 import Navbar from "../components/Navbar";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate();
+  const { login } = React.useContext(AuthContext);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -26,7 +30,10 @@ const Login = () => {
       if (response.ok) {
         // Đăng nhập thành công
         console.log("Login successful:", data);
-        // Tiến hành điều hướng hoặc xử lý trạng thái login khác nếu cần
+        // Lưu token vào AuthContext và localStorage
+        login(data.token);
+        // Chuyển hướng tới trang Home
+        navigate("/home");
       } else {
         // Đăng nhập thất bại
         console.error("Login failed:", data.message);
@@ -61,8 +68,7 @@ const Login = () => {
             <div>
               <label
                 htmlFor="email"
-                className="block text-sm font-medium text-gray-700"
-              >
+                className="block text-sm font-medium text-gray-700">
                 Email address
               </label>
               <div className="mt-1">
@@ -83,8 +89,7 @@ const Login = () => {
             <div>
               <label
                 htmlFor="password"
-                className="block text-sm font-medium text-gray-700"
-              >
+                className="block text-sm font-medium text-gray-700">
                 Password
               </label>
               <div className="mt-1">
@@ -112,8 +117,7 @@ const Login = () => {
                 />
                 <label
                   htmlFor="remember_me"
-                  className="ml-2 block text-sm text-gray-900"
-                >
+                  className="ml-2 block text-sm text-gray-900">
                   Remember me
                 </label>
               </div>
@@ -121,8 +125,7 @@ const Login = () => {
               <div className="text-sm">
                 <a
                   href="#"
-                  className="font-medium text-blue-600 hover:text-blue-500"
-                >
+                  className="font-medium text-blue-600 hover:text-blue-500">
                   Forgot your password?
                 </a>
               </div>
@@ -131,8 +134,7 @@ const Login = () => {
             <div>
               <button
                 type="submit"
-                className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-              >
+                className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                 Sign in
               </button>
             </div>
@@ -154,8 +156,7 @@ const Login = () => {
               <div>
                 <a
                   href="#"
-                  className="w-full flex items-center justify-center px-8 py-3 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
-                >
+                  className="w-full flex items-center justify-center px-8 py-3 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
                   <img
                     className="h-5 w-5"
                     src="https://www.svgrepo.com/show/512120/facebook-176.svg"
@@ -166,8 +167,7 @@ const Login = () => {
               <div>
                 <a
                   href="#"
-                  className="w-full flex items-center justify-center px-8 py-3 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
-                >
+                  className="w-full flex items-center justify-center px-8 py-3 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
                   <img
                     className="h-5 w-5"
                     src="https://www.svgrepo.com/show/513008/twitter-154.svg"
@@ -178,8 +178,7 @@ const Login = () => {
               <div>
                 <a
                   href="#"
-                  className="w-full flex items-center justify-center px-8 py-3 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
-                >
+                  className="w-full flex items-center justify-center px-8 py-3 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
                   <img
                     className="h-6 w-6"
                     src="https://www.svgrepo.com/show/506498/google.svg"
