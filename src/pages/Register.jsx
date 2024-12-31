@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Navbar from "../components/Navbar";
 import { useNavigate } from "react-router-dom";
+import api from "../api/AxiosConfig";
 
 const Register = () => {
   const [email, setEmail] = useState("");
@@ -14,32 +15,26 @@ const Register = () => {
 
     // Gửi yêu cầu POST đến API đăng nhập
     try {
-      const response = await fetch("http://localhost:3001/api/auth/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email,
-          password,
-          name,
-        }),
+      const response = await api.post("/auth/register", {
+        email,
+        password,
+        name,
       });
 
-      const data = await response.json();
+      const data = response.json();
 
       if (response.ok) {
-        // Đăng nhập thành công
+        // Đăng ký thành công
         console.log("Sign up successful:", data);
         alert("Sign up successful! Redirecting to login...");
         navigate("/login");
       } else {
-        // Đăng nhập thất bại
+        // Đăng ký thất bại
         console.error("Sign up failed:", data.message);
         alert("Sign up failed. Please check your email.");
       }
     } catch (error) {
-      console.error("Error logging in:", error);
+      console.error("Error sign up", error);
       alert("An error occurred during sign up. Please try again.");
     }
   };
@@ -67,8 +62,7 @@ const Register = () => {
             <div>
               <label
                 htmlFor="name"
-                className="block text-sm font-medium text-gray-700"
-              >
+                className="block text-sm font-medium text-gray-700">
                 Full name
               </label>
               <div className="mt-1">
@@ -89,8 +83,7 @@ const Register = () => {
             <div>
               <label
                 htmlFor="email"
-                className="block text-sm font-medium text-gray-700"
-              >
+                className="block text-sm font-medium text-gray-700">
                 Email address
               </label>
               <div className="mt-1">
@@ -111,8 +104,7 @@ const Register = () => {
             <div>
               <label
                 htmlFor="password"
-                className="block text-sm font-medium text-gray-700"
-              >
+                className="block text-sm font-medium text-gray-700">
                 Password
               </label>
               <div className="mt-1">
@@ -133,8 +125,7 @@ const Register = () => {
             <div>
               <button
                 type="submit"
-                className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-              >
+                className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                 Sign up
               </button>
             </div>
@@ -156,8 +147,7 @@ const Register = () => {
               <div>
                 <a
                   href="#"
-                  className="w-full flex items-center justify-center px-8 py-3 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
-                >
+                  className="w-full flex items-center justify-center px-8 py-3 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
                   <img
                     className="h-5 w-5"
                     src="https://www.svgrepo.com/show/512120/facebook-176.svg"
@@ -168,8 +158,7 @@ const Register = () => {
               <div>
                 <a
                   href="#"
-                  className="w-full flex items-center justify-center px-8 py-3 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
-                >
+                  className="w-full flex items-center justify-center px-8 py-3 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
                   <img
                     className="h-5 w-5"
                     src="https://www.svgrepo.com/show/513008/twitter-154.svg"
@@ -180,8 +169,7 @@ const Register = () => {
               <div>
                 <a
                   href="#"
-                  className="w-full flex items-center justify-center px-8 py-3 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
-                >
+                  className="w-full flex items-center justify-center px-8 py-3 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
                   <img
                     className="h-6 w-6"
                     src="https://www.svgrepo.com/show/506498/google.svg"

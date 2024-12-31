@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import Navbar from "../components/Navbar";
+import api from "../api/AxiosConfig";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -14,18 +15,12 @@ const Login = () => {
 
     // Gửi yêu cầu POST đến API đăng nhập
     try {
-      const response = await fetch("http://localhost:3001/api/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email,
-          password,
-        }),
+      const response = await api.post("/auth/login", {
+        email,
+        password,
       });
 
-      const data = await response.json();
+      const data = response.data;
 
       if (response.ok) {
         // Đăng nhập thành công
