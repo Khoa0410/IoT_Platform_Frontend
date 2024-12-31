@@ -22,21 +22,19 @@ const Login = () => {
 
       const data = response.data;
 
-      if (response.ok) {
-        // Đăng nhập thành công
-        console.log("Login successful:", data);
-        // Lưu token vào AuthContext và localStorage
-        login(data.token);
-        // Chuyển hướng tới trang Home
-        navigate("/home");
-      } else {
-        // Đăng nhập thất bại
-        console.error("Login failed:", data.message);
-        alert("Login failed. Please check your email and password.");
-      }
+      // Đăng nhập thành công
+      console.log("Login successful:", data);
+      // Lưu token vào AuthContext và localStorage
+      login(data.token); // Gọi hàm login trong AuthContext
+      localStorage.setItem("token", data.token);
+      // Chuyển hướng tới trang Home
+      navigate("/home");
     } catch (error) {
-      console.error("Error logging in:", error);
-      alert("An error occurred during login. Please try again.");
+      // Đăng nhập thất bại
+      const errorMessage =
+        error.response?.data?.error || "An unexpected error occurred.";
+      console.error("Login failed:", errorMessage);
+      alert(errorMessage);
     }
   };
 

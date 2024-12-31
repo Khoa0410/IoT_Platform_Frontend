@@ -13,7 +13,7 @@ const Register = () => {
   const handleRegister = async (e) => {
     e.preventDefault();
 
-    // Gửi yêu cầu POST đến API đăng nhập
+    // Gửi yêu cầu POST đến API đăng ký
     try {
       const response = await api.post("/auth/register", {
         email,
@@ -21,21 +21,18 @@ const Register = () => {
         name,
       });
 
-      const data = response.json();
+      const data = response.data;
 
-      if (response.ok) {
-        // Đăng ký thành công
-        console.log("Sign up successful:", data);
-        alert("Sign up successful! Redirecting to login...");
-        navigate("/login");
-      } else {
-        // Đăng ký thất bại
-        console.error("Sign up failed:", data.message);
-        alert("Sign up failed. Please check your email.");
-      }
+      // Đăng ký thành công
+      console.log("Sign up successful:", data);
+      alert("Sign up successful! Redirecting to login...");
+      navigate("/login");
     } catch (error) {
-      console.error("Error sign up", error);
-      alert("An error occurred during sign up. Please try again.");
+      // Đăng ký thất bại
+      const errorMessage =
+        error.response?.data?.error || "An unexpected error occurred.";
+      console.error("Sign up failed:", errorMessage);
+      alert(errorMessage);
     }
   };
 
