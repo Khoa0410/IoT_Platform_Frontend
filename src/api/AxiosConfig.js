@@ -1,8 +1,7 @@
 import axios from "axios";
 
-// Tạo một instance của Axios
 const api = axios.create({
-  // baseURL: 'http://localhost:3001/api',
+  // baseURL: "http://localhost:3001/api",
   baseURL: "https://iot-platform-backend.onrender.com/api",
   headers: {
     "Content-Type": "application/json",

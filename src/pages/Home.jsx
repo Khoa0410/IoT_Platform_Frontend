@@ -32,13 +32,13 @@ const Home = () => {
       ) : (
         <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md flex flex-col items-center">
           <Link
-            to="/device"
+            to="/DeviceList"
             className="w-full mb-4 bg-blue-600 hover:bg-blue-500 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-600">
             Go to Device Management
           </Link>
 
           <Link
-            to="/dashboard"
+            to="/Dashboard"
             className="w-full bg-green-600 hover:bg-green-500 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-600">
             Go to Dashboard Management
           </Link>

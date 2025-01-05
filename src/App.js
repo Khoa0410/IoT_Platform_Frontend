@@ -1,7 +1,7 @@
 import "./App.css";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
-import Navbar from "./components/Navbar";
+import PrivateRoute from "./router/PrivateRoute";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
 import Home from "./pages/Home";
@@ -13,12 +13,17 @@ function App() {
     <AuthProvider>
       <Router>
         <Routes>
-          <Route path="/Navbar" element={<Navbar />} />
           <Route path="/Register" element={<Register />} />
           <Route path="/Login" element={<Login />} />
           <Route path="/Home" element={<Home />} />
-          <Route path="/Device" element={<DeviceList />} />
-          <Route path="/Dashboard" element={<Dashboard />} />
+          <Route
+            path="/DeviceList"
+            element={<PrivateRoute element={<DeviceList />} />}
+          />
+          <Route
+            path="/Dashboard"
+            element={<PrivateRoute element={<Dashboard />} />}
+          />
         </Routes>
       </Router>
     </AuthProvider>

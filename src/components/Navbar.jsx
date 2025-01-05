@@ -27,17 +27,45 @@ const Navbar = () => {
             </Link>
           </div>
           <div className="hidden md:flex md:items-center md:justify-center md:gap-5">
-            <Link
-              aria-current="page"
-              className="inline-block rounded-lg px-2 py-1 text-sm font-medium text-gray-900 transition-all duration-200 hover:bg-gray-100 hover:text-gray-900"
-              to="#">
-              How it works
-            </Link>
-            <Link
-              className="inline-block rounded-lg px-2 py-1 text-sm font-medium text-gray-900 transition-all duration-200 hover:bg-gray-100 hover:text-gray-900"
-              to="#">
-              Pricing
-            </Link>
+            {isLoggedIn ? (
+              // Hiển thị khi đã đăng nhập
+              <>
+                <Link
+                  className="inline-block rounded-lg px-2 py-1 text-sm font-medium text-gray-900 transition-all duration-200 hover:bg-gray-100 hover:text-gray-900"
+                  to="/Device">
+                  Device
+                </Link>
+                <Link
+                  className="inline-block rounded-lg px-2 py-1 text-sm font-medium text-gray-900 transition-all duration-200 hover:bg-gray-100 hover:text-gray-900"
+                  to="/Dashboard">
+                  Dashboard
+                </Link>
+                <Link
+                  className="inline-block rounded-lg px-2 py-1 text-sm font-medium text-gray-900 transition-all duration-200 hover:bg-gray-100 hover:text-gray-900"
+                  to="https://www.linkedin.com/in/nguy%E1%BB%85n-%C4%91%E1%BB%A9c-khoa-a840aa256/">
+                  Contact
+                </Link>
+                <Link
+                  className="inline-block rounded-lg px-2 py-1 text-sm font-medium text-gray-900 transition-all duration-200 hover:bg-gray-100 hover:text-gray-900"
+                  to="/Document">
+                  Document
+                </Link>
+              </>
+            ) : (
+              // Hiển thị khi chưa đăng nhập
+              <>
+                <Link
+                  className="inline-block rounded-lg px-2 py-1 text-sm font-medium text-gray-900 transition-all duration-200 hover:bg-gray-100 hover:text-gray-900"
+                  to="https://www.linkedin.com/in/nguy%E1%BB%85n-%C4%91%E1%BB%A9c-khoa-a840aa256/">
+                  Contact
+                </Link>
+                <Link
+                  className="inline-block rounded-lg px-2 py-1 text-sm font-medium text-gray-900 transition-all duration-200 hover:bg-gray-100 hover:text-gray-900"
+                  to="/Document">
+                  Document
+                </Link>
+              </>
+            )}
           </div>
           <div className="flex items-center justify-end gap-3">
             {isLoggedIn ? (
