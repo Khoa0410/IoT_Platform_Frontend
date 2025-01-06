@@ -1,15 +1,15 @@
 import React, { useContext } from "react";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import { AuthContext } from "../context/AuthContext"; // Import AuthContext
+import { AuthContext } from "../context/AuthContext";
 
 const Navbar = () => {
-  const { isLoggedIn, logout } = useContext(AuthContext); // Sử dụng AuthContext
+  const { isLoggedIn, logout } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const handleLogout = () => {
     logout(); // Gọi hàm logout từ context
-    navigate("/home"); // Chuyển hướng đến trang /home
+    navigate("/");
   };
 
   return (
@@ -17,7 +17,7 @@ const Navbar = () => {
       <div className="px-4">
         <div className="flex items-center justify-between">
           <div className="flex shrink-0">
-            <Link aria-current="page" className="flex items-center" to="/Home">
+            <Link aria-current="page" className="flex items-center" to="/">
               <img
                 className="h-7 w-auto"
                 src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg"
@@ -32,7 +32,7 @@ const Navbar = () => {
               <>
                 <Link
                   className="inline-block rounded-lg px-2 py-1 text-sm font-medium text-gray-900 transition-all duration-200 hover:bg-gray-100 hover:text-gray-900"
-                  to="/Device">
+                  to="/DeviceList">
                   Device
                 </Link>
                 <Link
@@ -40,16 +40,20 @@ const Navbar = () => {
                   to="/Dashboard">
                   Dashboard
                 </Link>
-                <Link
+                <a
                   className="inline-block rounded-lg px-2 py-1 text-sm font-medium text-gray-900 transition-all duration-200 hover:bg-gray-100 hover:text-gray-900"
-                  to="https://www.linkedin.com/in/nguy%E1%BB%85n-%C4%91%E1%BB%A9c-khoa-a840aa256/">
+                  href="https://www.linkedin.com/in/nguy%E1%BB%85n-%C4%91%E1%BB%A9c-khoa-a840aa256/"
+                  target="_blank"
+                  rel="noopener noreferrer">
                   Contact
-                </Link>
-                <Link
+                </a>
+                <a
                   className="inline-block rounded-lg px-2 py-1 text-sm font-medium text-gray-900 transition-all duration-200 hover:bg-gray-100 hover:text-gray-900"
-                  to="/Document">
+                  href="/Document"
+                  target="_blank"
+                  rel="noopener noreferrer">
                   Document
-                </Link>
+                </a>
               </>
             ) : (
               // Hiển thị khi chưa đăng nhập

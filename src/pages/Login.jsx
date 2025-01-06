@@ -28,7 +28,7 @@ const Login = () => {
       login(data.token); // Gọi hàm login trong AuthContext
       localStorage.setItem("token", data.token);
       // Chuyển hướng tới trang Home
-      navigate("/home");
+      navigate("/");
     } catch (error) {
       // Đăng nhập thất bại
       const errorMessage =

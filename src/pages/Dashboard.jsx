@@ -4,7 +4,7 @@ import ChartList from "../components/ChartList";
 import SendMQTTCommand from "../components/SendMQTTCommand";
 
 const Dashboard = () => {
-  const [activeComponent, setActiveComponent] = useState("charts"); // Dùng state để quản lý component hiện tại
+  const [activeComponent, setActiveComponent] = useState("charts");
 
   // Hàm chuyển đổi giữa các component
   const handleComponentChange = (component) => {

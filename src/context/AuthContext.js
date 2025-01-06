@@ -5,7 +5,7 @@ export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [user, setUser] = useState(null); // Initialize user with null to handle empty state
+  const [user, setUser] = useState(null);
 
   // Kiểm tra trạng thái đăng nhập khi ứng dụng khởi động
   useEffect(() => {
