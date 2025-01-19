@@ -1,0 +1,59 @@
+{
+    "sections": [
+        {
+            "id": "introduction",
+            "title": "Introduction",
+            "description": "This page can help you learn how to use the IoT Platform to manage your devices.",
+            "steps": []
+        },
+        {
+            "id": "basic-usage",
+            "title": "Basic Usage",
+            "description": "This section explains the basic usage of the IoT Platform, including setting up and controlling devices.",
+            "steps": [
+                "Step 1: Log in to your account.",
+                "Step 2: Add your device to the platform.",
+                "Step 3: Control the device through the dashboard."
+            ]
+        },
+        {
+            "id": "setting-up-device",
+            "title": "Setting Up the Device",
+            "description": "Follow these steps to set up your IoT device for the first time.",
+            "steps": [
+                "Unbox your device and connect it to a power source.",
+                "Follow the instructions to connect it to your Wi-Fi network.",
+                "Use the platform's app or web dashboard to register the device."
+            ]
+        },
+        {
+            "id": "controlling-device",
+            "title": "Controlling the Device",
+            "description": "Once your device is set up, you can control it through the platform’s interface.",
+            "steps": [
+                "Turn the device ON/OFF using the main control button.",
+                "Adjust settings such as brightness or temperature from the device control panel.",
+                "Schedule tasks for automation (e.g., turn on/off at specific times)."
+            ]
+        },
+        {
+            "id": "monitoring",
+            "title": "Monitoring Device Status",
+            "description": "You can monitor the status of your devices in real-time through the platform's dashboard.",
+            "steps": [
+                "View current state (e.g., ON/OFF, active/inactive).",
+                "Check device health and performance metrics (battery level, connectivity status)."
+            ]
+        },
+        {
+            "id": "error-troubleshooting",
+            "title": "Error Troubleshooting",
+            "description": "If you encounter issues, here are some common solutions:",
+            "steps": [
+                "Device not connecting: Ensure your Wi-Fi network is stable and try resetting the device.",
+                "Device not responding: Check if the device is powered on and try rebooting it.",
+                "Platform not syncing: Ensure the platform has internet access and refresh the dashboard."
+            ]
+        }
+    ]
+}

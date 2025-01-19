@@ -13,7 +13,6 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
-import Navbar from "./Navbar";
 import api from "../api/AxiosConfig";
 
 ChartJS.register(
@@ -43,16 +42,19 @@ const ChartList = () => {
   });
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    const fetchCharts = async () => {
-      try {
-        const response = await api.get("/charts");
-        setCharts(response.data);
-      } catch (err) {
-        setError("Failed to load charts");
-      }
-    };
+  const fetchCharts = async () => {
+    try {
+      const response = await api.get("/charts");
+      const sortedCharts = response.data.sort((a, b) =>
+        a.name.localeCompare(b.name)
+      );
+      setCharts(sortedCharts);
+    } catch (err) {
+      setError("Failed to load charts");
+    }
+  };
 
+  useEffect(() => {
     fetchCharts();
   }, []);
 
@@ -112,7 +114,7 @@ const ChartList = () => {
       setCharts((prev) => [...prev, response.data]);
       setNewChart({ name: "", device: "", field: "", type: "line" });
       setError("");
-      window.location.reload();
+      fetchCharts();
     } catch (err) {
       setError(err.response?.data?.message || "Failed to create chart");
     }
@@ -126,7 +128,7 @@ const ChartList = () => {
         setSelectedChart(null);
       }
       setError("");
-      window.location.reload();
+      fetchCharts();
     } catch (err) {
       setError("Failed to delete chart");
     }

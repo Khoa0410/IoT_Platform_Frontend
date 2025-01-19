@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import Navbar from "../components/Navbar";
 import ChartList from "../components/ChartList";
 import SendMQTTCommand from "../components/SendMQTTCommand";
+import ButtonList from "../components/ButtonList";
 
 const Dashboard = () => {
   const [activeComponent, setActiveComponent] = useState("charts");
@@ -29,8 +30,19 @@ const Dashboard = () => {
               ? "bg-blue-500 shadow-md hover:bg-blue-600"
               : "bg-gray-500 hover:bg-gray-600"
           } hover:scale-105`}>
-          Visualize Your Data
+          Visualize Data
         </button>
+
+        <button
+          onClick={() => handleComponentChange("button")}
+          className={`px-6 py-3 text-white font-semibold rounded-lg transition-all duration-300 ease-in-out transform focus:outline-none ${
+            activeComponent === "button"
+              ? "bg-blue-500 shadow-md hover:bg-blue-600"
+              : "bg-gray-500 hover:bg-gray-600"
+          } hover:scale-105`}>
+          Control Device
+        </button>
+
         <button
           onClick={() => handleComponentChange("sendCommand")}
           className={`px-6 py-3 text-white font-semibold rounded-lg transition-all duration-300 ease-in-out transform focus:outline-none ${
@@ -43,7 +55,13 @@ const Dashboard = () => {
       </div>
 
       {/* Hiển thị component tương ứng */}
-      {activeComponent === "charts" ? <ChartList /> : <SendMQTTCommand />}
+      {activeComponent === "charts" ? (
+        <ChartList />
+      ) : activeComponent === "sendCommand" ? (
+        <SendMQTTCommand />
+      ) : (
+        <ButtonList />
+      )}
     </div>
   );
 };

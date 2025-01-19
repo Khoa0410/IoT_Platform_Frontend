@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import api from "../api/AxiosConfig";
 import DeviceEdit from "./DeviceEdit";
 
-const Device = ({ name, id, topic, telemetry = [] }) => {
+const Device = ({ name, id, topic, telemetry = [], onDelete, onEdit }) => {
   const [isEditing, setIsEditing] = useState(false);
 
   const latestTelemetry =
@@ -22,7 +22,7 @@ const Device = ({ name, id, topic, telemetry = [] }) => {
   const handleDelete = async () => {
     try {
       await api.delete(`/devices/${id}`);
-      window.location.reload();
+      onDelete(id);
     } catch (error) {
       console.error("Error deleting device:", error);
     }
@@ -78,7 +78,11 @@ const Device = ({ name, id, topic, telemetry = [] }) => {
         </td>
       </tr>
       {isEditing && (
-        <DeviceEdit deviceId={id} onClose={() => setIsEditing(false)} />
+        <DeviceEdit
+          deviceId={id}
+          onEditSuccess={onEdit}
+          onClose={() => setIsEditing(false)}
+        />
       )}
     </>
   );

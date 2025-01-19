@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import api from "../api/AxiosConfig";
 
-const DeviceEdit = ({ deviceId, onClose }) => {
+const DeviceEdit = ({ deviceId, onClose, onEditSuccess }) => {
   const [deviceData, setDeviceData] = useState({
     name: "",
     topic: "",
@@ -31,8 +31,11 @@ const DeviceEdit = ({ deviceId, onClose }) => {
     e.preventDefault();
     try {
       await api.put(`/devices/${deviceId}`, deviceData);
+      if (onEditSuccess) {
+        onEditSuccess();
+      }
+      onClose();
       setError(null);
-      window.location.reload();
     } catch (err) {
       setError(err.response?.data?.message || "Failed to update device");
     }

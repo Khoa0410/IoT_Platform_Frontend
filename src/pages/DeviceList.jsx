@@ -16,20 +16,20 @@ const DeviceList = () => {
   const devicesPerPage = 5; // Số thiết bị trên mỗi trang
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchDevices = async () => {
-      try {
-        const response = await api.get("/devices");
-        const sortedDevices = response.data.sort((a, b) =>
-          a.name.localeCompare(b.name)
-        );
-        setDevices(sortedDevices);
-        setTotalPages(Math.ceil(devices.length / devicesPerPage));
-      } catch (error) {
-        console.error("Error fetching devices:", error);
-      }
-    };
+  const fetchDevices = async () => {
+    try {
+      const response = await api.get("/devices");
+      const sortedDevices = response.data.sort((a, b) =>
+        a.name.localeCompare(b.name)
+      );
+      setDevices(sortedDevices);
+      setTotalPages(Math.ceil(devices.length / devicesPerPage));
+    } catch (error) {
+      console.error("Error fetching devices:", error);
+    }
+  };
 
+  useEffect(() => {
     fetchDevices();
   }, [isLoggedIn, navigate]);
 
@@ -72,9 +72,9 @@ const DeviceList = () => {
       };
 
       const response = await api.post("/devices", newDeviceData);
-      setDevices((prev) => [...prev, response.data]); // Cập nhật danh sách thiết bị
+      fetchDevices();
       setNewDevice({ name: "", topic: "" }); // Reset form
-      window.location.reload();
+      setErrorMessage("");
     } catch (error) {
       if (error.response && error.response.data) {
         setErrorMessage(error.response.data.message || "Error adding device.");
@@ -166,6 +166,8 @@ const DeviceList = () => {
                   id={device._id}
                   topic={device.topic}
                   telemetry={device.telemetry}
+                  onDelete={fetchDevices}
+                  onEdit={fetchDevices}
                 />
               ))
             ) : (
