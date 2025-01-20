@@ -138,7 +138,18 @@ const ChartList = () => {
   const getChartData = () => {
     if (!telemetryData || telemetryData.length === 0) return null;
 
-    const timestamps = telemetryData.map((entry) => entry.timestamp);
+    const timestamps = telemetryData.map((entry) => {
+      const date = new Date(entry.timestamp);
+
+      // Chuyển về múi giờ GMT+7
+      const options = {
+        timeZone: "Asia/Ho_Chi_Minh", // Múi giờ GMT+7
+        hour12: false, // Định dạng giờ 24
+      };
+
+      return date.toLocaleString("en-GB", options);
+    });
+
     const dataValues = telemetryData.map((entry) => entry.value);
 
     return {
@@ -162,7 +173,7 @@ const ChartList = () => {
       tooltip: { mode: "index", intersect: false },
     },
     scales: {
-      x: { display: true, title: { display: true, text: "Time" } },
+      x: { display: false, title: { display: true, text: "Time" } },
       y: { display: true, title: { display: true, text: "Value" } },
     },
   };
