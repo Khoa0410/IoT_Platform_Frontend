@@ -47,7 +47,9 @@ const Register = () => {
         </h2>
         <p className="mt-2 text-center text-sm text-gray-600 max-w">
           {"Already have an account? "}
-          <a href="#" className="font-medium text-blue-600 hover:text-blue-500">
+          <a
+            href="/Login"
+            className="font-medium text-blue-600 hover:text-blue-500">
             Login
           </a>
         </p>
