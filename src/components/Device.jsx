@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import api from "../api/AxiosConfig";
 import DeviceEdit from "./DeviceEdit";
+import { FaTrash, FaPen } from "react-icons/fa";
 
 const Device = ({ name, id, topic, telemetry = [], onDelete, onEdit }) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -66,13 +67,13 @@ const Device = ({ name, id, topic, telemetry = [], onDelete, onEdit }) => {
           <div className="flex justify-center items-center px-4 py-2">
             <button
               onClick={handleEdit}
-              className="px-2 py-1 mr-2 text-white bg-yellow-500 rounded hover:bg-yellow-600">
-              Edit
+              className="px-2 py-1 mr-2 text-black hover:text-red-500">
+              <FaPen />
             </button>
             <button
               onClick={handleDelete}
-              className="px-2 py-1 text-white bg-red-500 rounded hover:bg-red-600">
-              Delete
+              className="px-2 py-1 text-black hover:text-red-500">
+              <FaTrash />
             </button>
           </div>
         </td>

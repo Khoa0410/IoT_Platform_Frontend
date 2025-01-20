@@ -58,16 +58,20 @@ const Navbar = () => {
             ) : (
               // Hiển thị khi chưa đăng nhập
               <>
-                <Link
+                <a
                   className="inline-block rounded-lg px-2 py-1 text-sm font-medium text-gray-900 transition-all duration-200 hover:bg-gray-100 hover:text-gray-900"
-                  to="https://www.linkedin.com/in/nguy%E1%BB%85n-%C4%91%E1%BB%A9c-khoa-a840aa256/">
+                  href="https://www.linkedin.com/in/nguy%E1%BB%85n-%C4%91%E1%BB%A9c-khoa-a840aa256/"
+                  target="_blank"
+                  rel="noopener noreferrer">
                   Contact
-                </Link>
-                <Link
+                </a>
+                <a
                   className="inline-block rounded-lg px-2 py-1 text-sm font-medium text-gray-900 transition-all duration-200 hover:bg-gray-100 hover:text-gray-900"
-                  to="/Document">
+                  href="/Document"
+                  target="_blank"
+                  rel="noopener noreferrer">
                   Document
-                </Link>
+                </a>
               </>
             )}
           </div>
@@ -77,7 +81,7 @@ const Navbar = () => {
               <>
                 <Link
                   className="hidden items-center justify-center rounded-xl bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 transition-all duration-150 hover:bg-gray-50 sm:inline-flex"
-                  to="/profile">
+                  to="">
                   Profile
                 </Link>
                 <button

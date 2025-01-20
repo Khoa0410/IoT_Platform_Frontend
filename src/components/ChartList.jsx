@@ -14,6 +14,7 @@ import {
   Legend,
 } from "chart.js";
 import api from "../api/AxiosConfig";
+import { FaTrash } from "react-icons/fa";
 
 ChartJS.register(
   LineElement,
@@ -288,8 +289,8 @@ const ChartList = () => {
                           e.stopPropagation(); // Ngăn sự kiện click bảng bị kích hoạt
                           handleDeleteChart(chart._id);
                         }}
-                        className="px-2 py-1 text-white bg-red-500 rounded hover:bg-red-600">
-                        Delete
+                        className="px-2 py-1 text-black hover:text-red-500">
+                        <FaTrash />
                       </button>
                     </td>
                   </tr>
