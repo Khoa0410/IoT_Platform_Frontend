@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import Navbar from "../components/Navbar";
@@ -9,6 +9,21 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
   const { login } = React.useContext(AuthContext);
+
+  // Khi có JWT token trong URL
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get("token");
+
+    if (token) {
+      // Lưu token vào AuthContext và localStorage
+      login(token);
+      localStorage.setItem("token", token);
+
+      // Chuyển hướng tới trang Home sau khi đăng nhập thành công
+      navigate("/");
+    }
+  }, [navigate, login]);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -36,6 +51,21 @@ const Login = () => {
       console.error("Login failed:", errorMessage);
       alert(errorMessage);
     }
+  };
+
+  const handleGoogleLogin = () => {
+    const clientId =
+      "439705225055-4hesv7pa4c18aff3e88q4s7cp946pjen.apps.googleusercontent.com";
+    // const redirectUri = "http://localhost:3001/api/auth/google"; // Redirect URI của backend
+    const redirectUri =
+      "https://iot-platform-backend.onrender.com/api/auth/google"; // Redirect URI của backend
+    const scope = "profile email"; // Các quyền cần cấp phép
+    const responseType = "code"; // OAuth 2.0 authorization code flow
+
+    const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scope}&response_type=${responseType}`;
+
+    // Chuyển hướng người dùng đến Google OAuth
+    window.location.href = googleAuthUrl;
   };
 
   return (
@@ -173,6 +203,7 @@ const Login = () => {
               <div>
                 <a
                   href="#"
+                  onClick={handleGoogleLogin}
                   className="w-full flex items-center justify-center px-8 py-3 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
                   <img
                     className="h-6 w-6"
