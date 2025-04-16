@@ -3,6 +3,7 @@ import Navbar from "../components/Navbar";
 import ChartList from "../components/ChartList";
 import SendMQTTCommand from "../components/SendMQTTCommand";
 import ButtonList from "../components/ButtonList";
+import AlertList from "../components/AlertList";
 
 const Dashboard = () => {
   const [activeComponent, setActiveComponent] = useState("charts");
@@ -21,7 +22,7 @@ const Dashboard = () => {
         Dashboard Management
       </h1>
 
-      {/* Chuyển đổi giữa ChartList và SendMQTTCommand */}
+      {/* Chuyển đổi giữa các component */}
       <div className="mb-8 flex space-x-4">
         <button
           onClick={() => handleComponentChange("charts")}
@@ -52,6 +53,16 @@ const Dashboard = () => {
           } hover:scale-105`}>
           Send Command
         </button>
+
+        <button
+          onClick={() => handleComponentChange("alerts")}
+          className={`px-6 py-3 text-white font-semibold rounded-lg transition-all duration-300 ease-in-out transform focus:outline-none ${
+            activeComponent === "alerts"
+              ? "bg-blue-500 shadow-md hover:bg-blue-600"
+              : "bg-gray-500 hover:bg-gray-600"
+          } hover:scale-105`}>
+          Manage Alerts
+        </button>
       </div>
 
       {/* Hiển thị component tương ứng */}
@@ -59,8 +70,10 @@ const Dashboard = () => {
         <ChartList />
       ) : activeComponent === "sendCommand" ? (
         <SendMQTTCommand />
-      ) : (
+      ) : activeComponent === "button" ? (
         <ButtonList />
+      ) : (
+        <AlertList />
       )}
     </div>
   );

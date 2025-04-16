@@ -83,7 +83,7 @@ const ChartList = () => {
           endDate: null,
         };
         const response = await api.get(
-          `/devices/${selectedChart.device}/telemetry`,
+          `/devices/${selectedChart.device._id}/telemetry`,
           { params }
         );
         setTelemetryData(response.data);
@@ -292,7 +292,7 @@ const ChartList = () => {
                       {chart.type}
                     </td>
                     <td className="text-center px-4 py-2 border-b text-gray-600">
-                      {chart.device}
+                      {chart.device.name}
                     </td>
                     <td className="text-center px-4 py-2 border-b">
                       <button
