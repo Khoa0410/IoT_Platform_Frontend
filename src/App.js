@@ -1,6 +1,7 @@
 import "./App.css";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
+import AuthInitializer from "./context/AuthInitializer";
 import PrivateRoute from "./router/PrivateRoute";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
@@ -11,8 +12,9 @@ import Documentation from "./pages/Documentation";
 
 function App() {
   return (
-    <AuthProvider>
-      <Router>
+    <Router>
+      <AuthProvider>
+        <AuthInitializer />
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/Register" element={<Register />} />
@@ -27,8 +29,8 @@ function App() {
             element={<PrivateRoute element={<Dashboard />} />}
           />
         </Routes>
-      </Router>
-    </AuthProvider>
+      </AuthProvider>
+    </Router>
   );
 }
 

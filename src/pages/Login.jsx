@@ -10,38 +10,48 @@ const Login = () => {
   const navigate = useNavigate();
   const { login } = React.useContext(AuthContext);
 
-  // Khi có JWT token trong URL
+  // Khi có JWT token trong URL trả về từ Oauth2
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get("token");
 
     if (token) {
-      // Lưu token vào AuthContext và localStorage
+      // Lưu token vào AuthContext
       login(token);
-      localStorage.setItem("token", token);
+
+      // Xoá token khỏi URL để tránh lặp vô hạn
+      const newUrl = window.location.origin + window.location.pathname;
+      window.history.replaceState({}, document.title, newUrl);
 
       // Chuyển hướng tới trang Home sau khi đăng nhập thành công
       navigate("/");
     }
   }, [navigate, login]);
 
+  // Xử lý login bằng email, password
   const handleLogin = async (e) => {
     e.preventDefault();
 
     // Gửi yêu cầu POST đến API đăng nhập
     try {
-      const response = await api.post("/auth/login", {
-        email,
-        password,
-      });
+      const response = await api.post(
+        "/auth/login",
+        {
+          email,
+          password,
+        },
+        {
+          withCredentials: true, // Cho phép cookie HttpOnly đi kèm
+        }
+      );
 
-      const data = response.data;
+      const { accessToken } = response.data;
+      // Lưu access token vào context
+      login(accessToken);
 
       // Đăng nhập thành công
-      console.log("Login successful:", data);
-      // Lưu token vào AuthContext và localStorage
-      login(data.token); // Gọi hàm login trong AuthContext
-      localStorage.setItem("token", data.token);
+      console.log("Login successful:");
+
       // Chuyển hướng tới trang Home
       navigate("/");
     } catch (error) {

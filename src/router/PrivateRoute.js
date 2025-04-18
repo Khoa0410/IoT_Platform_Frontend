@@ -1,12 +1,11 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Navigate } from "react-router-dom";
+import { AuthContext } from "../context/AuthContext";
 
-// Kiểm tra token trong localStorage
-const PrivateRoute = ({ element: Component }) => {
-  const token = localStorage.getItem("token"); // Kiểm tra token trong localStorage
+const PrivateRoute = ({ element }) => {
+  const { isLoggedIn } = useContext(AuthContext);
 
-  // Nếu có token, render component, nếu không chuyển hướng về login
-  return token ? Component : <Navigate to="/login" />;
+  return isLoggedIn ? element : <Navigate to="/" />;
 };
 
 export default PrivateRoute;

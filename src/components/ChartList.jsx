@@ -35,6 +35,8 @@ const ChartList = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedChart, setSelectedChart] = useState(null);
   const [telemetryData, setTelemetryData] = useState([]);
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
   const [newChart, setNewChart] = useState({
     name: "",
     device: "",
@@ -72,31 +74,42 @@ const ChartList = () => {
     fetchDevices();
   }, []);
 
+  const fetchTelemetry = async () => {
+    if (!selectedChart) return;
+
+    try {
+      const toUTCString = (localDateTimeStr) => {
+        if (!localDateTimeStr) return null;
+        const localDate = new Date(localDateTimeStr);
+        return new Date(localDate.getTime()).toISOString();
+      };
+
+      const params = {
+        field: selectedChart.field,
+        startDate: toUTCString(startDate),
+        endDate: toUTCString(endDate),
+      };
+
+      const response = await api.get(
+        `/devices/${selectedChart.device._id}/telemetry`,
+        { params }
+      );
+      setTelemetryData(response.data);
+    } catch (err) {
+      setError("Failed to load telemetry data");
+    }
+  };
+
   useEffect(() => {
-    const fetchTelemetry = async () => {
-      if (!selectedChart) return;
-
-      try {
-        const params = {
-          field: selectedChart.field,
-          startDate: null,
-          endDate: null,
-        };
-        const response = await api.get(
-          `/devices/${selectedChart.device._id}/telemetry`,
-          { params }
-        );
-        setTelemetryData(response.data);
-      } catch (err) {
-        setError("Failed to load telemetry data");
-      }
-    };
-
-    fetchTelemetry();
+    if (selectedChart) {
+      fetchTelemetry();
+    }
   }, [selectedChart]);
 
   const handleChartSelect = (chart) => {
     setSelectedChart(chart);
+    setStartDate("");
+    setEndDate("");
     setTelemetryData([]);
   };
 
@@ -317,6 +330,39 @@ const ChartList = () => {
             <h3 className="text-2xl font-semibold text-gray-800 mb-6">
               {selectedChart.name} - {selectedChart.type.toUpperCase()} Chart
             </h3>
+
+            {/* Bộ lọc thời gian */}
+            <div className="flex items-end gap-4 mb-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Start Date
+                </label>
+                <input
+                  type="datetime-local"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                  className="px-3 py-2 border rounded w-full"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  End Date
+                </label>
+                <input
+                  type="datetime-local"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                  className="px-3 py-2 border rounded w-full"
+                />
+              </div>
+              <button
+                onClick={fetchTelemetry}
+                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 h-[42px]">
+                Load Data
+              </button>
+            </div>
+
+            {/* Biểu đồ */}
             <div>
               {selectedChart.type === "line" && (
                 <Line
