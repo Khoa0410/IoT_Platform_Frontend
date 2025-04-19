@@ -3,7 +3,7 @@ import Cookies from "js-cookie";
 
 const api = axios.create({
   // baseURL: "http://localhost:3001/api",
-  baseURL: "https://iot-platform-backend.onrender.com/api",
+  baseURL: "/api",
   withCredentials: true, // Cho phép gửi cookie HttpOnly từ backend
   headers: {
     "Content-Type": "application/json",
@@ -43,7 +43,7 @@ api.interceptors.response.use(
       try {
         const refreshRes = await axios.post(
           // "http://localhost:3001/api/auth/refresh-token",
-          "https://iot-platform-backend.onrender.com/api/auth/refresh-token",
+          "https://daemicu.id.vn/api/auth/refresh-token",
           {},
           { withCredentials: true }
         );

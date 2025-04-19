@@ -67,8 +67,7 @@ const Login = () => {
     const clientId =
       "439705225055-4hesv7pa4c18aff3e88q4s7cp946pjen.apps.googleusercontent.com";
     // const redirectUri = "http://localhost:3001/api/auth/google"; // Redirect URI của backend
-    const redirectUri =
-      "https://iot-platform-backend.onrender.com/api/auth/google"; // Redirect URI của backend
+    const redirectUri = "https://daemicu.id.vn/api/auth/google"; // Redirect URI của backend
     const scope = "profile email"; // Các quyền cần cấp phép
     const responseType = "code"; // OAuth 2.0 authorization code flow
 

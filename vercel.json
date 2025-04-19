@@ -1,0 +1,8 @@
+{
+    "rewrites": [
+        {
+            "source": "/api/:match*",
+            "destination": "https://iot-platform-backend.onrender.com/api/:match*"
+        }
+    ]
+}
