@@ -53,7 +53,11 @@ const Device = ({ name, id, topic, telemetry = [], onDelete, onEdit }) => {
                       {key}
                     </td>
                     <td className="px-2 py-1 text-sm border-b border-gray-300 text-center">
-                      {typeof value === "boolean"}
+                      {typeof value === "boolean"
+                        ? value
+                          ? "ON"
+                          : "OFF"
+                        : value}
                     </td>
                   </tr>
                 ))}

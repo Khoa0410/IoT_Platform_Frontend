@@ -24,6 +24,7 @@ const Login = () => {
       window.history.replaceState({}, document.title, newUrl);
 
       // Chuyển hướng tới trang Home sau khi đăng nhập thành công
+      sessionStorage.setItem("lastPath", "/");
       navigate("/");
     }
   }, [navigate, login]);

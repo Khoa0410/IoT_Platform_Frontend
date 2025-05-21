@@ -9,12 +9,14 @@ import {
   BarController,
   CategoryScale,
   LinearScale,
+  TimeScale,
   Title,
   Tooltip,
   Legend,
 } from "chart.js";
 import api from "../api/AxiosConfig";
 import { FaTrash } from "react-icons/fa";
+import "chartjs-adapter-date-fns";
 
 ChartJS.register(
   LineElement,
@@ -24,6 +26,7 @@ ChartJS.register(
   BarController,
   CategoryScale,
   LinearScale,
+  TimeScale,
   Title,
   Tooltip,
   Legend

@@ -20,7 +20,7 @@ export const AuthProvider = ({ children }) => {
       await api.post("/auth/logout", {}, { withCredentials: true });
 
       // Sau khi logout, xóa token và user trong context
-      setAccessToken(null); // Xóa access token trong frontend
+      setAccessToken(null);
       setIsLoggedIn(false);
       setUser(null);
     } catch (error) {

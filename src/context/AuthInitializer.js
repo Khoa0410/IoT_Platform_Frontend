@@ -10,7 +10,11 @@ const AuthInitializer = () => {
 
   useEffect(() => {
     const currentPath = location.pathname;
-    if (currentPath !== "/" && currentPath !== "/login") {
+    if (
+      currentPath !== "/" &&
+      currentPath !== "/login" &&
+      currentPath !== "/login/"
+    ) {
       sessionStorage.setItem("lastPath", currentPath);
     }
   }, [location]);
@@ -31,10 +35,9 @@ const AuthInitializer = () => {
         setIsLoggedIn(true);
 
         const lastPath = sessionStorage.getItem("lastPath");
-        if (lastPath && lastPath !== "/login") {
+        if (lastPath && lastPath !== "/Login" && lastPath !== "/Login/") {
           navigate(lastPath);
         }
-
         console.log("Logged in successfully");
       } catch (error) {
         console.log("Not logged in or refresh token expired");
