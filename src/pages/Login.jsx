@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import Navbar from "../components/Navbar";
 import api from "../api/AxiosConfig";
+import { baseURL } from "../api/AxiosConfig";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -67,8 +68,7 @@ const Login = () => {
   const handleGoogleLogin = () => {
     const clientId =
       "439705225055-4hesv7pa4c18aff3e88q4s7cp946pjen.apps.googleusercontent.com";
-    // const redirectUri = "http://localhost:3001/api/auth/google"; // Redirect URI của backend
-    const redirectUri = "https://daemicu.id.vn/api/auth/google"; // Redirect URI của backend
+    const redirectUri = `${baseURL}/auth/google`; // Redirect URI của backend
     const scope = "profile email"; // Các quyền cần cấp phép
     const responseType = "code"; // OAuth 2.0 authorization code flow
 

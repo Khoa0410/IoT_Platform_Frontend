@@ -21,6 +21,11 @@ const Device = ({ name, id, topic, telemetry = [], onDelete, onEdit }) => {
   };
 
   const handleDelete = async () => {
+    const confirmed = window.confirm(
+      "Khi xóa thiết bị, tất cả dữ liệu liên quan như biểu đồ, nút bấm, cảnh báo sẽ bị xóa."
+    );
+    if (!confirmed) return;
+
     try {
       await api.delete(`/devices/${id}`);
       onDelete(id);

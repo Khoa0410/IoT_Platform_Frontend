@@ -1,9 +1,11 @@
 import axios from "axios";
 import Cookies from "js-cookie";
 
+// export const baseURL = "http://localhost:3001/api";
+export const baseURL = "https://daemicu.id.vn/api";
+
 const api = axios.create({
-  // baseURL: "http://localhost:3001/api",
-  baseURL: "/api",
+  baseURL,
   withCredentials: true, // Cho phép gửi cookie HttpOnly từ backend
   headers: {
     "Content-Type": "application/json",
@@ -42,8 +44,7 @@ api.interceptors.response.use(
       originalRequest._retry = true;
       try {
         const refreshRes = await axios.post(
-          // "http://localhost:3001/api/auth/refresh-token",
-          "https://daemicu.id.vn/api/auth/refresh-token",
+          `${baseURL}/auth/refresh-token`,
           {},
           { withCredentials: true }
         );
