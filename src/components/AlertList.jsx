@@ -5,6 +5,7 @@ import { FiXCircle } from "react-icons/fi";
 const AlertList = () => {
   const [alerts, setAlerts] = useState([]);
   const [devices, setDevices] = useState([]);
+  const [telemetryFields, setTelemetryFields] = useState([]);
   const [newAlert, setNewAlert] = useState({
     name: "",
     device: "",
@@ -29,6 +30,44 @@ const AlertList = () => {
     };
     fetchData();
   }, []);
+
+  // Lấy danh sách trường telemetry khi chọn thiết bị
+  useEffect(() => {
+    const fetchTelemetryFields = async () => {
+      if (!newAlert.device) {
+        setTelemetryFields([]);
+        setNewAlert((prev) => ({
+          ...prev,
+          conditions: prev.conditions.map((cond) => ({
+            ...cond,
+            sensorField: "",
+          })),
+        }));
+        return;
+      }
+      try {
+        const response = await api.get(
+          `/devices/${newAlert.device}/telemetry-field`
+        );
+        setTelemetryFields(response.data.fields || []);
+        // Đặt lại sensorField cho tất cả điều kiện nếu không còn trong danh sách mới
+        setNewAlert((prev) => ({
+          ...prev,
+          conditions: prev.conditions.map((cond) => ({
+            ...cond,
+            sensorField: response.data.fields.includes(cond.sensorField)
+              ? cond.sensorField
+              : "",
+          })),
+        }));
+      } catch (err) {
+        setError("Failed to load telemetry fields");
+        setTelemetryFields([]);
+      }
+    };
+
+    fetchTelemetryFields();
+  }, [newAlert.device]);
 
   const handleAddAlert = async (e) => {
     e.preventDefault();
@@ -97,9 +136,7 @@ const AlertList = () => {
             <div className="space-y-2">
               {newAlert.conditions.map((cond, idx) => (
                 <div key={idx} className="flex gap-2 items-center">
-                  <input
-                    type="text"
-                    placeholder="Sensor Field"
+                  <select
                     value={cond.sensorField}
                     onChange={(e) => {
                       const updated = [...newAlert.conditions];
@@ -107,7 +144,21 @@ const AlertList = () => {
                       setNewAlert({ ...newAlert, conditions: updated });
                     }}
                     className="flex-1 px-2 py-1 border rounded"
-                  />
+                    disabled={!newAlert.device || telemetryFields.length === 0}
+                  >
+                    <option value="">
+                      {telemetryFields.length === 0
+                        ? newAlert.device
+                          ? "No fields available"
+                          : "Select a device first"
+                        : "Select field"}
+                    </option>
+                    {telemetryFields.map((field) => (
+                      <option key={field} value={field}>
+                        {field}
+                      </option>
+                    ))}
+                  </select>
                   <select
                     value={cond.operator}
                     onChange={(e) => {

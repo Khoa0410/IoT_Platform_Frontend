@@ -46,6 +46,7 @@ const ChartList = () => {
     field: "",
     type: "line",
   });
+  const [telemetryFields, setTelemetryFields] = useState([]);
   const [error, setError] = useState("");
 
   const fetchCharts = async () => {
@@ -77,6 +78,32 @@ const ChartList = () => {
     fetchDevices();
   }, []);
 
+  // Lấy danh sách trường telemetry khi chọn thiết bị
+  useEffect(() => {
+    const fetchTelemetryFields = async () => {
+      if (!newChart.device) {
+        setTelemetryFields([]);
+        setNewChart((prev) => ({ ...prev, field: "" }));
+        return;
+      }
+      try {
+        const response = await api.get(
+          `/devices/${newChart.device}/telemetry-field`
+        );
+        setTelemetryFields(response.data.fields || []);
+        // Đặt lại field nếu không còn trong danh sách mới
+        if (!response.data.fields.includes(newChart.field)) {
+          setNewChart((prev) => ({ ...prev, field: "" }));
+        }
+      } catch (err) {
+        setError("Failed to load telemetry fields");
+        setTelemetryFields([]);
+      }
+    };
+
+    fetchTelemetryFields();
+  }, [newChart.device]);
+
   const fetchTelemetry = async () => {
     if (!selectedChart) return;
 
@@ -104,10 +131,19 @@ const ChartList = () => {
   };
 
   useEffect(() => {
-    if (selectedChart) {
-      fetchTelemetry();
+    if (!selectedChart) {
+      return;
     }
-  }, [selectedChart]);
+    fetchTelemetry();
+
+    // Thiết lập interval để gọi fetchTelemetry mỗi 10 giây
+    const intervalId = setInterval(() => {
+      fetchTelemetry();
+    }, 10000); // 10 giây
+
+    // Dọn dẹp interval khi component unmount hoặc selectedChart thay đổi
+    return () => clearInterval(intervalId);
+  }, [selectedChart, startDate, endDate]);
 
   const handleChartSelect = (chart) => {
     setSelectedChart(chart);
@@ -245,15 +281,26 @@ const ChartList = () => {
                 </option>
               ))}
             </select>
-            <input
-              type="text"
-              placeholder="Field"
+            <select
               value={newChart.field}
               onChange={(e) =>
                 setNewChart((prev) => ({ ...prev, field: e.target.value }))
               }
               className="flex-1 px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
+              disabled={!newChart.device || telemetryFields.length === 0}>
+              <option value="" disabled>
+                {telemetryFields.length === 0
+                  ? newChart.device
+                    ? "No fields available"
+                    : "Select a device first"
+                  : "Select field"}
+              </option>
+              {telemetryFields.map((field) => (
+                <option key={field} value={field}>
+                  {field}
+                </option>
+              ))}
+            </select>
             <select
               value={newChart.type}
               onChange={(e) =>
