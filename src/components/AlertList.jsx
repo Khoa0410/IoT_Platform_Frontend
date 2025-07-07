@@ -144,8 +144,7 @@ const AlertList = () => {
                       setNewAlert({ ...newAlert, conditions: updated });
                     }}
                     className="flex-1 px-2 py-1 border rounded"
-                    disabled={!newAlert.device || telemetryFields.length === 0}
-                  >
+                    disabled={!newAlert.device || telemetryFields.length === 0}>
                     <option value="">
                       {telemetryFields.length === 0
                         ? newAlert.device
@@ -244,10 +243,11 @@ const AlertList = () => {
               <h3 className="text-lg font-semibold break-words whitespace-pre-wrap max-w-full">
                 {alert.name}
               </h3>
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-gray-600 mb-2">
                 Device: {alert.device?.name || "Unknown"}
               </p>
-              <ul className="mt-2 text-sm">
+              <p className="text-sm text-gray-600">Conditions:</p>
+              <ul className="text-sm">
                 {alert.conditions.map((c, i) => (
                   <li key={i}>
                     {c.sensorField} {c.operator} {c.value}
