@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { Line, Bar } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -14,9 +14,11 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
-import api from "../api/AxiosConfig";
+import api, { getAccessToken } from "../api/AxiosConfig";
 import { FaTrash } from "react-icons/fa";
 import "chartjs-adapter-date-fns";
+import socketService from "../services/socketService";
+import { AuthContext } from "../context/AuthContext";
 
 ChartJS.register(
   LineElement,
@@ -33,6 +35,7 @@ ChartJS.register(
 );
 
 const ChartList = () => {
+  const { isLoggedIn, user } = useContext(AuthContext);
   const [charts, setCharts] = useState([]);
   const [devices, setDevices] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -48,6 +51,116 @@ const ChartList = () => {
   });
   const [telemetryFields, setTelemetryFields] = useState([]);
   const [error, setError] = useState("");
+
+  // Kết nối socket khi component mount và user đã đăng nhập
+  useEffect(() => {
+    console.log("useEffect triggered - isLoggedIn:", isLoggedIn, "user:", user);
+
+    if (isLoggedIn) {
+      const accessToken = getAccessToken();
+      console.log("Connecting to socket with token:", accessToken);
+
+      if (accessToken) {
+        console.log("Token exists, connecting to socket...");
+        socketService.connect(accessToken);
+
+        // Lắng nghe alerts
+        socketService.onAlert((alertData) => {
+          console.log("Received alert:", alertData);
+          // Xử lý alert nếu cần
+        });
+      } else {
+        console.log("No access token found");
+      }
+    } else {
+      console.log("User not logged in");
+    }
+
+    return () => {
+      console.log("Cleaning up socket connection");
+      socketService.disconnect();
+    };
+  }, [isLoggedIn]);
+
+  // Đăng ký socket listener cho device data với dependencies phù hợp
+  useEffect(() => {
+    if (!isLoggedIn) return;
+
+    // Hủy listener cũ trước khi đăng ký mới
+    socketService.off("device_data");
+
+    // Đăng ký listener mới với state hiện tại
+    socketService.onDeviceData((data) => {
+      console.log("Received device data:", data);
+      handleRealtimeData(data);
+    });
+
+    return () => {
+      socketService.off("device_data");
+    };
+  }, [isLoggedIn, selectedChart]); // Dependencies quan trọng
+
+  // Xử lý dữ liệu realtime từ socket
+  const handleRealtimeData = (socketData) => {
+    console.log("handleRealtimeData called with:", {
+      socketData,
+      selectedChart: selectedChart
+        ? {
+            id: selectedChart._id,
+            deviceId: selectedChart.device._id,
+            field: selectedChart.field,
+          }
+        : null,
+    });
+
+    // Check nếu không có chart được chọn
+    if (!selectedChart) {
+      console.log("Realtime data ignored - selectedChart:", !!selectedChart);
+      return;
+    }
+
+    // Check nếu device data không thuộc về chart đang được chọn
+    if (socketData.deviceId !== selectedChart.device._id) {
+      console.log(
+        "Device ID mismatch - received:",
+        socketData.deviceId,
+        "expected:",
+        selectedChart.device._id
+      );
+      return;
+    }
+
+    // Chuyển đổi dữ liệu socket thành format telemetry
+    const newTelemetryEntry = {
+      timestamp: socketData.timestamp,
+      value: socketData.data[selectedChart.field],
+    };
+
+    console.log("Creating new telemetry entry:", newTelemetryEntry);
+
+    // Chỉ thêm nếu có giá trị cho field được chọn
+    if (newTelemetryEntry.value !== undefined) {
+      console.log("Adding new data point to chart");
+      setTelemetryData((prevData) => {
+        const newData = [...prevData, newTelemetryEntry];
+        console.log("Updated telemetry data length:", newData.length);
+
+        // Giới hạn số lượng điểm dữ liệu (ví dụ: 100 điểm gần nhất)
+        if (newData.length > 100) {
+          return newData.slice(-100);
+        }
+
+        return newData;
+      });
+    } else {
+      console.log(
+        "Value is undefined for field:",
+        selectedChart.field,
+        "in data:",
+        socketData.data
+      );
+    }
+  };
 
   const fetchCharts = async () => {
     try {
@@ -130,26 +243,20 @@ const ChartList = () => {
     }
   };
 
+  // Load dữ liệu lịch sử khi chọn chart hoặc thay đổi khoảng thời gian
   useEffect(() => {
     if (!selectedChart) {
       return;
     }
+
     fetchTelemetry();
-
-    // Thiết lập interval để gọi fetchTelemetry mỗi 10 giây
-    const intervalId = setInterval(() => {
-      fetchTelemetry();
-    }, 10000); // 10 giây
-
-    // Dọn dẹp interval khi component unmount hoặc selectedChart thay đổi
-    return () => clearInterval(intervalId);
   }, [selectedChart, startDate, endDate]);
 
   const handleChartSelect = (chart) => {
     setSelectedChart(chart);
     setStartDate("");
     setEndDate("");
-    setTelemetryData([]);
+    // Không clear telemetryData để giữ data realtime
   };
 
   const handleCreateChart = async () => {
@@ -375,13 +482,38 @@ const ChartList = () => {
         </div>
 
         {/* Hiển thị đồ thị */}
-        {selectedChart && telemetryData.length > 0 && (
+        {selectedChart && (
           <div className="bg-white shadow rounded p-6">
-            <h3 className="text-2xl font-semibold text-gray-800 mb-6">
-              {selectedChart.name} - {selectedChart.type.toUpperCase()} Chart
-            </h3>
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-2xl font-semibold text-gray-800 mb-6">
+                {selectedChart.name} - {selectedChart.type.toUpperCase()} Chart
+                (Real-time)
+              </h3>
 
-            {/* Bộ lọc thời gian */}
+              {/* Debug button */}
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => {
+                    console.log("Debug Info:", {
+                      selectedChart: selectedChart
+                        ? {
+                            id: selectedChart._id,
+                            name: selectedChart.name,
+                            field: selectedChart.field,
+                            deviceId: selectedChart.device._id,
+                          }
+                        : null,
+                      telemetryDataLength: telemetryData.length,
+                      accessToken: getAccessToken() ? "exists" : "missing",
+                    });
+                  }}
+                  className="px-3 py-1 bg-gray-500 text-white rounded text-sm">
+                  Debug
+                </button>
+              </div>
+            </div>
+
+            {/* Bộ lọc thời gian - luôn hiển thị */}
             <div className="flex items-end gap-4 mb-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -408,25 +540,45 @@ const ChartList = () => {
               <button
                 onClick={fetchTelemetry}
                 className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 h-[42px]">
-                Load Data
+                Load Historical
+              </button>
+              <button
+                onClick={() => {
+                  setStartDate("");
+                  setEndDate("");
+                  setTelemetryData([]);
+                }}
+                className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 h-[42px]">
+                Live Mode
               </button>
             </div>
 
             {/* Biểu đồ */}
             <div>
-              {selectedChart.type === "line" && (
-                <Line
-                  key={selectedChart._id}
-                  data={getChartData()}
-                  options={chartOptions}
-                />
-              )}
-              {selectedChart.type === "bar" && (
-                <Bar
-                  key={selectedChart._id}
-                  data={getChartData()}
-                  options={chartOptions}
-                />
+              {telemetryData.length > 0 ? (
+                <>
+                  {selectedChart.type === "line" && (
+                    <Line
+                      key={selectedChart._id}
+                      data={getChartData()}
+                      options={chartOptions}
+                    />
+                  )}
+                  {selectedChart.type === "bar" && (
+                    <Bar
+                      key={selectedChart._id}
+                      data={getChartData()}
+                      options={chartOptions}
+                    />
+                  )}
+                </>
+              ) : (
+                <div className="text-center py-8">
+                  <p className="text-gray-500">
+                    Waiting for real-time data or load historical data using the
+                    filters above...
+                  </p>
+                </div>
               )}
             </div>
           </div>

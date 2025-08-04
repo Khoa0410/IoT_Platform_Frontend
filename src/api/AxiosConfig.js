@@ -2,7 +2,9 @@ import axios from "axios";
 import Cookies from "js-cookie";
 
 // export const baseURL = "http://localhost:3001/api";
+// export const backendURL = "http://localhost:3001"; // URL cho backend, dùng trong socketService.js
 export const baseURL = "https://daemicu.id.vn/api";
+export const backendURL = "https://daemicu.id.vn"; // URL cho backend, dùng trong socketService.js
 
 const api = axios.create({
   baseURL,
@@ -17,6 +19,10 @@ let accessToken = null;
 
 export const setAccessToken = (token) => {
   accessToken = token;
+};
+
+export const getAccessToken = () => {
+  return accessToken;
 };
 
 // Interceptor để tự động thêm token vào headers

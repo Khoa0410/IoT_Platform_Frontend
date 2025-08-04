@@ -8,7 +8,10 @@ export const AuthProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
 
+  console.log("AuthProvider state - isLoggedIn:", isLoggedIn, "user:", user);
+
   const login = (accessToken, userInfo) => {
+    console.log("AuthContext login called with:", { accessToken, userInfo });
     setAccessToken(accessToken);
     setIsLoggedIn(true);
     setUser(userInfo);
