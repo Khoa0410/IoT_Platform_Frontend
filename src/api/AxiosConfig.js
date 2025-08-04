@@ -4,7 +4,7 @@ import Cookies from "js-cookie";
 // export const baseURL = "http://localhost:3001/api";
 // export const backendURL = "http://localhost:3001"; // URL cho backend, dùng trong socketService.js
 export const baseURL = "https://daemicu.id.vn/api";
-export const backendURL = "https://daemicu.id.vn"; // URL cho backend, dùng trong socketService.js
+export const backendURL = "https://iot-platform-backend.onrender.com"; // URL cho backend, dùng trong socketService.js
 
 const api = axios.create({
   baseURL,
