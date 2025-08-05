@@ -107,14 +107,14 @@ const ChartList = () => {
       selectedChart: selectedChart
         ? {
             id: selectedChart._id,
-            deviceId: selectedChart.device._id,
+            deviceId: selectedChart.device?._id,
             field: selectedChart.field,
           }
         : null,
     });
 
-    // Check nếu không có chart được chọn
-    if (!selectedChart) {
+    // Check nếu không có chart được chọn hoặc device không hợp lệ
+    if (!selectedChart || !selectedChart.device?._id) {
       console.log("Realtime data ignored - selectedChart:", !!selectedChart);
       return;
     }
@@ -133,7 +133,10 @@ const ChartList = () => {
     // Chuyển đổi dữ liệu socket thành format telemetry
     const newTelemetryEntry = {
       timestamp: socketData.timestamp,
-      value: socketData.data[selectedChart.field],
+      // Xử lý dữ liệu từ socket - có thể có cấu trúc nested hoặc flat
+      value:
+        socketData.data[selectedChart.field]?.value ||
+        socketData.data[selectedChart.field],
     };
 
     console.log("Creating new telemetry entry:", newTelemetryEntry);
@@ -165,12 +168,21 @@ const ChartList = () => {
   const fetchCharts = async () => {
     try {
       const response = await api.get("/charts");
-      const sortedCharts = response.data.sort((a, b) =>
+
+      // Kiểm tra và lọc dữ liệu hợp lệ
+      const validCharts = (response.data || []).filter(
+        (chart) =>
+          chart && chart._id && chart.name && chart.device && chart.device.name
+      );
+
+      const sortedCharts = validCharts.sort((a, b) =>
         a.name.localeCompare(b.name)
       );
       setCharts(sortedCharts);
     } catch (err) {
+      console.error("Failed to load charts:", err);
       setError("Failed to load charts");
+      setCharts([]); // Set empty array on error
     }
   };
 
@@ -200,15 +212,18 @@ const ChartList = () => {
         return;
       }
       try {
-        const response = await api.get(
-          `/devices/${newChart.device}/telemetry-field`
-        );
-        setTelemetryFields(response.data.fields || []);
+        const response = await api.get(`/telemetry/fields/${newChart.device}`);
+
+        // Trích xuất field names từ response
+        const fieldNames = response.data.fields.map((field) => field.name);
+        setTelemetryFields(fieldNames || []);
+
         // Đặt lại field nếu không còn trong danh sách mới
-        if (!response.data.fields.includes(newChart.field)) {
+        if (!fieldNames.includes(newChart.field)) {
           setNewChart((prev) => ({ ...prev, field: "" }));
         }
       } catch (err) {
+        console.error("Failed to load telemetry fields:", err);
         setError("Failed to load telemetry fields");
         setTelemetryFields([]);
       }
@@ -218,7 +233,12 @@ const ChartList = () => {
   }, [newChart.device]);
 
   const fetchTelemetry = async () => {
-    if (!selectedChart) return;
+    if (!selectedChart || !selectedChart.device?._id) {
+      console.log(
+        "Cannot fetch telemetry - no chart selected or device ID missing"
+      );
+      return;
+    }
 
     try {
       const toUTCString = (localDateTimeStr) => {
@@ -229,16 +249,35 @@ const ChartList = () => {
 
       const params = {
         field: selectedChart.field,
-        startDate: toUTCString(startDate),
-        endDate: toUTCString(endDate),
+        limit: 100, // Giới hạn số lượng record
       };
 
-      const response = await api.get(
-        `/devices/${selectedChart.device._id}/telemetry`,
-        { params }
+      // Chỉ thêm startDate và endDate nếu có giá trị
+      if (startDate) {
+        params.startDate = toUTCString(startDate);
+      }
+      if (endDate) {
+        params.endDate = toUTCString(endDate);
+      }
+
+      const response = await api.get(`/telemetry/${selectedChart.device._id}`, {
+        params,
+      });
+
+      // Xử lý dữ liệu từ response mới
+      const processedData = response.data.data.map((entry) => ({
+        timestamp: entry.timestamp,
+        value: entry.data[selectedChart.field]?.value, // Lấy value từ nested object
+      }));
+
+      // Lọc bỏ các entry không có value cho field được chọn
+      const filteredData = processedData.filter(
+        (entry) => entry.value !== undefined && entry.value !== null
       );
-      setTelemetryData(response.data);
+
+      setTelemetryData(filteredData);
     } catch (err) {
+      console.error("Failed to load telemetry data:", err);
       setError("Failed to load telemetry data");
     }
   };
@@ -315,7 +354,9 @@ const ChartList = () => {
       labels: timestamps,
       datasets: [
         {
-          label: `${selectedChart.name} (${selectedChart.field})`,
+          label: `${selectedChart?.name || "Unknown"} (${
+            selectedChart?.field || "Unknown"
+          })`,
           data: dataValues,
           borderColor: "rgba(75, 192, 192, 1)",
           backgroundColor: "rgba(75, 192, 192, 0.2)",
@@ -339,7 +380,11 @@ const ChartList = () => {
 
   const filteredCharts = charts.filter(
     (chart) =>
-      chart.name && chart.name.toLowerCase().includes(searchQuery.toLowerCase())
+      chart &&
+      chart.name &&
+      chart.device &&
+      chart.device.name &&
+      chart.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
@@ -456,13 +501,13 @@ const ChartList = () => {
                     }`}
                     onClick={() => handleChartSelect(chart)}>
                     <td className="text-center px-4 py-2 border-b font-medium text-gray-700">
-                      {chart.name}
+                      {chart?.name || "N/A"}
                     </td>
                     <td className="text-center px-4 py-2 border-b text-gray-600">
-                      {chart.type}
+                      {chart?.type || "N/A"}
                     </td>
                     <td className="text-center px-4 py-2 border-b text-gray-600">
-                      {chart.device.name}
+                      {chart?.device?.name || "N/A"}
                     </td>
                     <td className="text-center px-4 py-2 border-b">
                       <button
@@ -486,7 +531,8 @@ const ChartList = () => {
           <div className="bg-white shadow rounded p-6">
             <div className="flex justify-between items-center mb-6">
               <h3 className="text-2xl font-semibold text-gray-800 mb-6">
-                {selectedChart.name} - {selectedChart.type.toUpperCase()} Chart
+                {selectedChart?.name || "Unknown Chart"} -{" "}
+                {selectedChart?.type?.toUpperCase() || "UNKNOWN"} Chart
                 (Real-time)
               </h3>
 
@@ -500,7 +546,7 @@ const ChartList = () => {
                             id: selectedChart._id,
                             name: selectedChart.name,
                             field: selectedChart.field,
-                            deviceId: selectedChart.device._id,
+                            deviceId: selectedChart.device?._id,
                           }
                         : null,
                       telemetryDataLength: telemetryData.length,
